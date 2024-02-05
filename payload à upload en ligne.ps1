@@ -1,5 +1,5 @@
 $hookurl = "$dc"
-$seconds = 30 # Intervalle entre les captures d'écran en secondes
+$seconds = 30 # Intervalle entre les captures d'écran en secondes 1
 $a = 1 # Nombre de captures d'écran à prendre
 
 # Détection de l'URL raccourcie
